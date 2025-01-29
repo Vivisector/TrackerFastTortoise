@@ -1,7 +1,9 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
 from fastapi.responses import HTMLResponse
-from fastapi.responses import JSONResponse
+# from fastapi.responses import JSONResponse
+from fastapi import Form
 from app.schemas import TaskCreate, TaskUpdate, TaskInDB
 from app.crud import create_task, get_task, get_tasks, update_task, delete_task
 from app.database import init_db, close_db
@@ -28,6 +30,28 @@ async def read_tasks():
 async def tasks_html(request: Request):
     tasks = await get_tasks()
     return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
+
+# Страница редактирования задачи
+@app.get("/tasks/{task_id}/edit", response_class=HTMLResponse, name="edit_task")
+async def edit_task(task_id: int, request: Request):
+    task = await get_task(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return templates.TemplateResponse("edit_task.html", {"request": request, "task": task})
+
+# ✅ Новый маршрут для обновления задачи
+@app.post("/tasks/{task_id}/update", name="update_task")
+async def update_task_handler(
+    task_id: int,
+    title: str = Form(...),
+    description: str = Form(...),
+    progress: int = Form(...)
+):
+    task_data = {"title": title, "description": description, "progress": progress}
+    updated_task = await update_task(task_id, task_data)
+    if not updated_task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return RedirectResponse(url="/tasks/html", status_code=303)
 
 # @app.get("/tasks/", response_model=list[TaskInDB])
 # async def read_tasks():

@@ -14,7 +14,6 @@
                 <th>#</th>
                 <th>Задача</th>
                 <th>Описание</th>
-                <th>Статус</th>
                 <th>Прогресс</th>
             </tr>
         </thead>
@@ -22,9 +21,16 @@
             {% for task in tasks %}
             <tr>
                 <td>{{ task.id }}</td>
-                <td>{{ task.title }}</td>
-                <td>{{ task.description or 'Без описания' }}</td>
-                <td>{{ task.status }}</td>
+                <td>
+                    <a href="{{ url_for('edit_task', task_id=task.id) }}" class="fw-bold text-decoration-none">
+                        {{ task.title }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ url_for('edit_task', task_id=task.id) }}" class="text-muted text-decoration-none">
+                        {{ task.description[:50] }}{% if task.description|length > 50 %}...{% endif %}
+                    </a>
+                </td>
                 <td>
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" style="width: {{ task.progress }}%;" aria-valuenow="{{ task.progress }}" aria-valuemin="0" aria-valuemax="100">
