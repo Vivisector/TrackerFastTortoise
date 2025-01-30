@@ -8,21 +8,23 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="mb-4">Create New Task</h1>
+        <h1 class="mb-4">Новая задача</h1>
         <form action="{{ url_for('create_task_form_post') }}" method="post">
             <div class="mb-3">
-                <label for="title" class="form-label">Title</label>
+                <label for="title" class="form-label">Название</label>
                 <input type="text" class="form-control" id="title" name="title" required>
             </div>
             <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
+                <label for="description" class="form-label">Описание</label>
                 <textarea class="form-control" id="description" name="description"></textarea>
             </div>
             <div class="mb-3">
-                <label for="progress" class="form-label">Progress</label>
+                <label for="progress" class="form-label">Прогресс</label>
                 <input type="number" class="form-control" id="progress" name="progress" min="0" max="100">
             </div>
-            <button type="submit" class="btn btn-primary">Create Task</button>
+            <button type="submit" class="btn btn-primary">Создать задачу</button>
+             <!-- Кнопка "Отмена" -->
+    <a href="{{ url_for('tasks_html') }}" class="btn btn-secondary">Отмена</a>
         </form>
     </div>
 </body>

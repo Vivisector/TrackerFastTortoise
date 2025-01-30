@@ -4,7 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Список задач</title>
+<style>
+    .text-muted {
+        opacity: 0.4;  /* Делает текст бледным */
+<!--        text-decoration: line-through;  /* Зачеркивает текст */-->
+    }
+    .btn-secondary {
+        opacity: 0.8;  /* Делает кнопку бледной */
+        pointer-events: none;  /* Отключает кнопку, чтобы нельзя было нажать */
+    }
+        .btn-cancel {
+        background-color: #6c757d; /* Серый цвет, как у secondary */
+        border-color: #6c757d;    /* Цвет границы */
+        color: white;            /* Цвет текста */
+    }
+    .btn-cancel:hover {
+        background-color: #5a6268; /* Более темный серый при наведении */
+    }
+</style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
 </head>
 <body class="container mt-4">
     <h1 class="mb-4">Список задач</h1>
@@ -15,11 +34,14 @@
                 <th>Задача</th>
                 <th>Описание</th>
                 <th>Прогресс</th>
+                <th>Создана</th>
+                <th>Изменена</th>
             </tr>
         </thead>
         <tbody>
             {% for task in tasks %}
-            <tr>
+<!--            <tr>-->
+                 <tr class="{% if task.status == 'done' %}text-muted{% endif %}" data-toggle="tooltip">
                 <td>{{ task.id }}</td>
                 <td>
                     <a href="{{ url_for('edit_task', task_id=task.id) }}" class="fw-bold text-decoration-none">
@@ -38,9 +60,21 @@
                         </div>
                     </div>
                 </td>
+                 <td>{{ task.created_at.strftime("%d.%m.%Y %H:%M") }}</td>
+        <td>{{ task.updated_at.strftime("%d.%m.%Y %H:%M") }}</td>
+                <td>
+            <form method="post" action="{{ url_for('complete_task', task_id=task.id) }}" style="display: inline;">
+                {% if task.status != 'done' %}
+                    <button type="submit" class="btn btn-sm btn-success">Завершить</button>
+                {% else %}
+                    <button class="btn btn-sm btn-secondary" disabled>Завершено</button>
+                {% endif %}
+            </form>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+<a href="{{ url_for('create_task_form') }}" class="btn btn-success mt-4">Новая задача</a>
+
 </body>
 </html>
