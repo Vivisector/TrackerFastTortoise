@@ -74,6 +74,38 @@
             {% endfor %}
         </tbody>
     </table>
+    <!-- Блок пагинации -->
+<div class="pagination">
+    <ul class="pagination justify-content-center">
+        <!-- Кнопка "На первую" -->
+        <li class="page-item {% if not has_previous %}disabled{% endif %}">
+            <a class="page-link" href="?page=1" title="Первая страница">&laquo;&laquo;</a>
+        </li>
+
+        <!-- Кнопка "Назад" -->
+        <li class="page-item {% if not has_previous %}disabled{% endif %}">
+            <a class="page-link" href="?page={{ previous_page }}" title="Назад">&laquo;</a>
+        </li>
+
+        <!-- Номера страниц -->
+        {% for num in range(1, total_pages + 1) %}
+        <li class="page-item {% if num == page %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+
+        <!-- Кнопка "Вперед" -->
+        <li class="page-item {% if not has_next %}disabled{% endif %}">
+            <a class="page-link" href="?page={{ next_page }}" title="Вперед">&raquo;</a>
+        </li>
+
+        <!-- Кнопка "На последнюю" -->
+        <li class="page-item {% if not has_next %}disabled{% endif %}">
+            <a class="page-link" href="?page={{ total_pages }}" title="Последняя страница">&raquo;&raquo;</a>
+        </li>
+    </ul>
+</div>
+
 <a href="{{ url_for('create_task_form') }}" class="btn btn-success mt-4">Новая задача</a>
 
 </body>

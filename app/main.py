@@ -9,6 +9,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from app.schemas import TaskCreate, TaskUpdate, TaskInDB
 from app.crud import create_task, get_task, get_tasks, update_task, delete_task
 from app.database import init_db, close_db
+from app.models import Task
 
 app = FastAPI()
 
@@ -30,15 +31,36 @@ async def on_shutdown():
 
 @app.get("/", response_class=HTMLResponse)
 @app.get("/tasks/", response_class=HTMLResponse)
-async def tasks_html(request: Request):
-    """
-    Отображает главную страницу со списком задач в формате HTML.
+async def tasks_html(request: Request, page: int = 1, limit: int = 5):
+    total_tasks = await Task.all().count()  # Общее количество задач
+    total_pages = (total_tasks + limit - 1) // limit  # Округление вверх
 
-    :param request: Объект запроса.
-    :return: HTML-страница со списком задач.
-    """
-    tasks = await get_tasks()
-    return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
+    tasks = await Task.all().offset((page - 1) * limit).limit(limit)
+
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "tasks": tasks,
+            "page": page,
+            "limit": limit,
+            "total_pages": total_pages,
+            "has_previous": page > 1,
+            "has_next": page < total_pages,
+            "previous_page": page - 1 if page > 1 else None,
+            "next_page": page + 1 if page < total_pages else None,
+        }
+    )
+
+# async def tasks_html(request: Request):
+#     """
+#     Отображает главную страницу со списком задач в формате HTML.
+#
+#     :param request: Объект запроса.
+#     :return: HTML-страница со списком задач.
+#     """
+#     tasks = await get_tasks()
+#     return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
 
 
 @app.get("/tasks/{task_id}/edit", response_class=HTMLResponse, name="edit_task")
